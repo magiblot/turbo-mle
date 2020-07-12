@@ -76,7 +76,7 @@ extern "C" int tb_select_input_mode(int mode)
 
 extern "C" int tb_select_output_mode(int mode)
 {
-    return 0;
+    return TB_OUTPUT_NORMAL;
 }
 
 extern "C" int tb_peek_event(struct tb_event *event, int timeout)

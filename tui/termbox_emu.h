@@ -16,6 +16,9 @@ struct TermboxEmulator {
     TermboxView *view {0};
     std::vector<tb_cell> cellbuf;
 
+    uint16_t defaultFg {0x07};
+    uint16_t defaultBg {0x00};
+
     template<class ...Args>
     void setText(Args &&...);
     void resize(int x, int y);
@@ -32,9 +35,9 @@ inline void TermboxEmulator::setText(Args &&...args)
     int written = snprintf(s, sizeof(s), args...);
     size_t i = 0;
     for (; int(i) < written; ++i)
-        cellbuf[i].ch = s[i];
+        cellbuf[i] = {uchar(s[i]), defaultFg, defaultBg};
     for (; i < cellbuf.size(); ++i)
-        cellbuf[i].ch = '\0';
+        cellbuf[i] = {'\0', defaultFg, defaultBg};
 }
 
 inline void TermboxEmulator::resize(int x, int y)
