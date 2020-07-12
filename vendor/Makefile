@@ -3,7 +3,9 @@ lua_objects:=$(patsubst lua/%.c,lua/%.o,$(filter-out lua/lua.c, $(wildcard lua/*
 termbox_cflags:=-std=c99 -Wall -Wextra -pedantic -Wno-unused-result -g -O3 -D_XOPEN_SOURCE $(CFLAGS)
 termbox_objects:=$(patsubst termbox/src/%.c,termbox/src/%.o,$(wildcard termbox/src/*.c))
 
-all: uthash/src/utlist.h pcre/.libs/libpcre.a lua/liblua5.3.a termbox/src/libtermbox.a
+all: uthash/src/utlist.h pcre/.libs/libpcre.a lua/liblua5.3.a termbox/src/libtermbox.a forced
+
+forced: tvision/libtvision.a
 
 uthash/src/utlist.h:
 	command -v git && git submodule update --init
@@ -23,10 +25,14 @@ $(lua_objects): %.o: %.c
 $(termbox_objects): %.o: %.c
 	$(CC) -c $(termbox_cflags) $< -o $@
 
+tvision/libtvision.a:
+	cd tvision && cmake . && cmake --build .
+
 clean:
 	rm -f lua/liblua5.3.a $(lua_objects)
 	rm -f termbox/src/libtermbox.a $(termbox_objects)
 	rm -f pcre/config.h.in~
 	-$(MAKE) -C pcre clean
+	-$(MAKE) -C tvision clean
 
-.PHONY: all clean
+.PHONY: all forced clean

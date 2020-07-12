@@ -4,8 +4,10 @@ mle_cflags:=-std=c99 -Wall -Wextra -pedantic -Wno-pointer-arith -Wno-unused-resu
 mle_ldflags:=$(LDFLAGS)
 mle_dynamic_libs:=-lpcre -ltermbox -llua5.3
 mle_static_libs:=vendor/pcre/.libs/libpcre.a vendor/termbox/src/libtermbox.a vendor/lua/liblua5.3.a
-mle_ldlibs:=-lm $(LDLIBS)
+mle_forced_vendor_deps:=vendor/tvision/libtvision.a
+mle_ldlibs:=-lm $(LDLIBS) -lstdc++ -lgpm -lncursesw $(mle_forced_vendor_deps)
 mle_objects:=$(patsubst %.c,%.o,$(wildcard *.c))
+mle_tuiobjects:=$(patsubst %.cc,%.o,$(wildcard tui/*.cc))
 mle_objects_no_main:=$(filter-out main.o,$(mle_objects))
 mle_func_tests:=$(wildcard tests/func/test_*.sh))
 mle_unit_tests:=$(patsubst %.c,%,$(wildcard tests/unit/*.c))
@@ -26,14 +28,20 @@ endif
 
 all: mle
 
-mle: $(mle_vendor_deps) $(mle_objects)
-	$(CC) $(mle_static_var) $(mle_cflags) $(mle_objects) $(mle_ldflags) $(mle_ldlibs) -o mle
+mle: $(mle_vendor_deps) $(mle_objects) $(mle_tuiobjects)
+	$(CC) $(mle_static_var) $(mle_cflags) $(mle_objects) $(mle_tuiobjects) $(mle_ldflags) $(mle_ldlibs) -o mle
 
 $(mle_objects): %.o: %.c
 	$(CC) -c $(mle_cflags) $< -o $@
 
+$(mle_tuiobjects): tui/%.o: tui/%.cc vendor/tvision/libtvision.a
+	$(MAKE) -C tui
+
 $(mle_vendor_deps):
 	$(MAKE) -C vendor
+
+$(mle_forced_vendor_deps):
+	$(MAKE) -C vendor forced
 
 $(mle_unit_tests): %: %.c
 	$(CC) $(mle_cflags) $(mle_objects_no_main) $(mle_ldflags) $(mle_ldlibs) $< -o $@
@@ -58,7 +66,7 @@ clean_quick:
 	rm -f mle $(mle_objects)
 
 clean:
-	rm -f mle $(mle_objects) $(mle_vendor_deps) $(mle_unit_tests)
+	rm -f mle $(mle_objects) $(mle_vendor_deps) $(mle_unit_tests) $(mle_tuiobjects)
 	$(MAKE) -C vendor clean
 
 .PHONY: all test sloc install uscript clean
