@@ -14,4 +14,10 @@ void TermboxView::changeBounds(const TRect &bounds)
     setBounds(bounds);
     resetSize();
     drawView();
+
+    term->eventq.push({
+        .type = TB_EVENT_RESIZE,
+        .w = size.x,
+        .h = size.y
+    });
 }

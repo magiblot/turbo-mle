@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <cstdio>
+#include <queue>
 #include <termbox.h>
 
 class TermboxView;
@@ -15,6 +16,7 @@ struct TermboxEmulator {
     TPoint size {0, 0};
     TermboxView *view {0};
     std::vector<tb_cell> cellbuf;
+    std::queue<tb_event> eventq;
 
     uint16_t defaultFg {0x07};
     uint16_t defaultBg {0x00};
@@ -25,6 +27,7 @@ struct TermboxEmulator {
 
     tb_cell& at(int x, int y);
     void put(int x, int y, const tb_cell &cell);
+    int popEvent(tb_event &event);
 
 };
 
@@ -54,6 +57,14 @@ inline tb_cell& TermboxEmulator::at(int x, int y)
 inline void TermboxEmulator::put(int x, int y, const tb_cell &cell)
 {
     at(x, y) = cell;
+}
+
+inline int TermboxEmulator::popEvent(tb_event &event)
+{
+    tb_event tev = eventq.front();
+    eventq.pop();
+    event = tev;
+    return tev.type;
 }
 
 #endif

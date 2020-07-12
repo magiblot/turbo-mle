@@ -71,7 +71,7 @@ extern "C" struct tb_cell *tb_cell_buffer(void)
 
 extern "C" int tb_select_input_mode(int mode)
 {
-    return 0;
+    return TB_INPUT_ESC;
 }
 
 extern "C" int tb_select_output_mode(int mode)
@@ -81,16 +81,18 @@ extern "C" int tb_select_output_mode(int mode)
 
 extern "C" int tb_peek_event(struct tb_event *event, int timeout)
 {
-    return -1;
+    if (!app->mleTerm->eventq.empty()) {
+        return app->mleTerm->popEvent(*event);
+    }
+    return 0;
 }
 
 extern "C" int tb_poll_event(struct tb_event *event)
 {
-    TEvent e;
-    do {
-        e = {};
+    while (app->mleTerm->eventq.empty()) {
+        TEvent e = {};
         app->getEvent(e);
         app->handleEvent(e);
-    } while (e.what == evNothing);
-    return -1;
+    }
+    return app->mleTerm->popEvent(*event);
 }
