@@ -8,7 +8,9 @@
 
 #include <memory>
 #include <vector>
-#include "termbox_emu.h"
+#include <termbox.h>
+
+class TermboxEmulator;
 
 struct TermboxView: public TView {
 
@@ -28,15 +30,22 @@ struct TermboxView: public TView {
 
 };
 
-inline TermboxView::TermboxView(const TRect &bounds, std::shared_ptr<TermboxEmulator> term) :
+#include "termbox_emu.h"
+
+inline TermboxView::TermboxView(const TRect &bounds, std::shared_ptr<TermboxEmulator> _term) :
     TView(bounds),
-    term(std::move(term))
+    term(std::move(_term))
 {
     growMode = gfGrowHiX | gfGrowHiY;
     options |= ofSelectable;
     eventMask = evMouseDown | evKeyDown | evCommand | evBroadcast;
-    this->term->view = this;
+    term->view = this;
     resetSize();
+    if (term->cursorVisible) {
+        auto [x, y] = term->cursor;
+        setCursor(x, y);
+        showCursor();
+    }
 }
 
 inline TermboxView::~TermboxView()

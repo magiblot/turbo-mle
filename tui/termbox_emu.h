@@ -17,6 +17,8 @@ struct TermboxEmulator {
     TermboxView *view {0};
     std::vector<tb_cell> cellbuf;
     std::queue<tb_event> eventq;
+    TPoint cursor {};
+    bool cursorVisible {false};
 
     uint16_t defaultFg {0x07};
     uint16_t defaultBg {0x00};
@@ -24,12 +26,16 @@ struct TermboxEmulator {
     template<class ...Args>
     void setText(Args &&...);
     void resize(int x, int y);
+    void setCursor(int x, int y);
+    void hideCursor();
 
     tb_cell& at(int x, int y);
     void put(int x, int y, const tb_cell &cell);
     int popEvent(tb_event &event);
 
 };
+
+#include "termbox_view.h"
 
 template<class ...Args>
 inline void TermboxEmulator::setText(Args &&...args)
@@ -47,6 +53,23 @@ inline void TermboxEmulator::resize(int x, int y)
 {
     cellbuf.resize(x*y);
     size = {x, y};
+}
+
+inline void TermboxEmulator::setCursor(int x, int y)
+{
+    cursor = {x, y};
+    cursorVisible = true;
+    if (view) {
+        view->setCursor(x, y);
+        view->showCursor();
+    }
+}
+
+inline void TermboxEmulator::hideCursor()
+{
+    cursorVisible = false;
+    if (view)
+        view->hideCursor();
 }
 
 inline tb_cell& TermboxEmulator::at(int x, int y)

@@ -47,16 +47,10 @@ extern "C" void tb_present(void)
 
 extern "C" void tb_set_cursor(int cx, int cy)
 {
-    TView *view = app->mleTerm->view;
-    if (view) {
-        if (cx == TB_HIDE_CURSOR && cy == TB_HIDE_CURSOR)
-                view->hideCursor();
-        else {
-            view->setCursor(cx, cy);
-            if (!view->getState(sfCursorVis))
-                view->showCursor();
-        }
-    }
+    if (cx == TB_HIDE_CURSOR && cy == TB_HIDE_CURSOR)
+        app->mleTerm->hideCursor();
+    else
+        app->mleTerm->setCursor(cx, cy);
 }
 
 extern "C" void tb_put_cell(int x, int y, const struct tb_cell *cell)
