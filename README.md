@@ -4,6 +4,8 @@ A Turbo Vision TUI for the `mle` text editor.
 
 Forked from https://github.com/adsr/mle.
 
+![](https://user-images.githubusercontent.com/20713561/87260590-fe6cfe00-c4b2-11ea-91ce-622f32dd2faa.png)
+
 # mle
 
 mle is a small, flexible, terminal-based text editor written in C.
