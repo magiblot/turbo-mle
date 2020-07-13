@@ -12,6 +12,7 @@
 #define Uses_TStatusLine
 #define Uses_TSubMenu
 #define Uses_TWindow
+#define Uses_TFrame
 #include <tvision/tv.h>
 
 TMleApp *app = 0;
@@ -81,6 +82,8 @@ void TMleApp::newEditorWindow()
             w->insert(v);
             deskTop->insert(w);
             if (!mleRunning) {
+                w->flags &= ~wfClose;
+                w->frame->drawView();
                 mleRunning = true;
                 invokeMle();
                 mleRunning = false;

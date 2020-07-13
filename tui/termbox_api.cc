@@ -15,6 +15,7 @@ extern "C" void tb_shutdown(void)
 {
     if (app->mleTerm->view) {
         TWindow *w = (TWindow *) app->mleTerm->view->owner;
+        w->flags |= wfClose;
         message(w, evCommand, cmClose, 0);
     }
 }
