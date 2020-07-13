@@ -2,6 +2,8 @@
 #define TUI_TERMBOX_VIEW_H
 
 #define Uses_TView
+#define Uses_TKeys
+#define Uses_TEvent
 #include <tvision/tv.h>
 
 #include <memory>
@@ -22,6 +24,7 @@ struct TermboxView: public TView {
 
     void changeBounds(const TRect& bounds) override;
     void draw() override;
+    void handleEvent(TEvent &ev) override;
 
 };
 
@@ -30,6 +33,8 @@ inline TermboxView::TermboxView(const TRect &bounds, std::shared_ptr<TermboxEmul
     term(std::move(term))
 {
     growMode = gfGrowHiX | gfGrowHiY;
+    options |= ofSelectable;
+    eventMask = evMouseDown | evKeyDown | evCommand | evBroadcast;
     this->term->view = this;
     resetSize();
 }
