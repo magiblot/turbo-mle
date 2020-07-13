@@ -3,6 +3,9 @@
 #include "termbox_view.h"
 #include <termbox.h>
 
+#define Uses_TWindow
+#include <tvision/tv.h>
+
 extern "C" int tb_init(void)
 {
     return 0;
@@ -10,9 +13,10 @@ extern "C" int tb_init(void)
 
 extern "C" void tb_shutdown(void)
 {
-    app->mleTerm->setText("tb_shutdown() was invoked.");
-    if (app->mleTerm->view)
-        app->mleTerm->view->drawView();
+    if (app->mleTerm->view) {
+        TWindow *w = (TWindow *) app->mleTerm->view->owner;
+        message(w, evCommand, cmClose, 0);
+    }
 }
 
 extern "C" int tb_width(void)

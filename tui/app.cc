@@ -83,6 +83,7 @@ void TMleApp::newEditorWindow()
             if (!mleRunning) {
                 mleRunning = true;
                 invokeMle();
+                mleRunning = false;
             } else if (v->term != mleTerm) {
                 v->term->setText("Another instance of the application is running.");
                 v->drawView();
