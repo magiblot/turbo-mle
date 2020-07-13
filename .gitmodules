@@ -10,6 +10,3 @@
 [submodule "pcre"]
 	path = vendor/pcre
 	url = https://github.com/adsr/pcre.git
-[submodule "tvision"]
-	path = vendor/tvision
-	url = https://www.gitlab.com/magiblot/tvision.git
